@@ -87,10 +87,14 @@ defmodule Xlsxir.ParseWorksheet do
     %{state | value_type: :value}
   end
 
+  def sax_event_handler({:startElement, _, 'is', _, _}, state, _, _),
+    do: %{state | value_type: :inline_string}
+
   def sax_event_handler({:characters, value}, state, _, _) do
     case state do
       nil -> nil
       %{value_type: :value} -> %{state | value: value}
+      %{value_type: :inline_string} -> %{state | value: value}
       _ -> state
     end
   end
